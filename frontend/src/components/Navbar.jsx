@@ -83,6 +83,16 @@ const Navbar = ({ scrolled }) => {
     >
       <ul className="flex flex-wrap justify-end items-center gap-4 md:gap-6 py-3.5 font-semibold text-purple-900 max-w-7xl mx-auto px-4">
         <li>{HomeLink}</li>
+        <li>
+          <Link
+            to="/about"
+            className={`transition-colors duration-200 border-b-2 pb-1 hover:text-indigo-600 hover:border-indigo-600 align-middle ${
+              isAbout ? 'text-indigo-600 border-indigo-600' : 'border-transparent'
+            }`}
+          >
+            About Us
+          </Link>
+        </li>
         <li>{VideoLink}</li>
         <li>{BooksLink}</li>
         <li>
@@ -91,6 +101,7 @@ const Navbar = ({ scrolled }) => {
           </Link>
         </li>
         <li>
+          {/* Updated HashLink with scrollWithOffset */}
           <HashLink
             to="/contact#top"
             scroll={scrollWithOffset}
@@ -99,18 +110,6 @@ const Navbar = ({ scrolled }) => {
             Register Now
             <span className="ml-1 text-lg">&#8594;</span>
           </HashLink>
-        </li>
-        <li>
-          <Link
-            to="/about"
-            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full font-semibold text-base transition-all duration-200 hover:scale-105 shadow-sm ${
-              isAbout
-                ? 'bg-purple-600 text-white ring-2 ring-purple-400/50'
-                : 'border-2 border-purple-600 text-purple-700 hover:bg-purple-600 hover:text-white'
-            }`}
-          >
-            About Us
-          </Link>
         </li>
       </ul>
     </nav>
