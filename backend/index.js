@@ -51,6 +51,14 @@ mongoose
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
+app.get('/', (req, res) => {
+  res.status(200).send('Books Writing Nepal API is running');
+});
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime() });
+});
+
 app.use('/api/books', booksRouter);
 app.use('/api/orders', ordersRouter);
 app.use('/api/admin', adminRouter);
