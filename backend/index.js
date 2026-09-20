@@ -1,16 +1,60 @@
 import express from 'express';
-import nodemailer from 'nodemailer';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import path from 'path';
+import dns from 'dns';
+import { fileURLToPath } from 'url';
+
+// Use reliable DNS resolvers for MongoDB Atlas SRV record resolution
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (dnsErr) {
+  console.warn('Could not set custom DNS servers:', dnsErr.message);
+}
+import { getTransporter } from './utils/mailer.js';
+import booksRouter from './routes/books.js';
+import ordersRouter from './routes/orders.js';
+import adminRouter from './routes/admin.js';
+import portfolioRouter from './routes/portfolio.js';
 
 dotenv.config();
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const app = express();
-// app.use(cors());
-app.use(cors({
-  origin: 'https://bookswritingnepal.com', // only allow your domain
-}));
+
+const allowedOrigins = [
+  'https://bookswritingnepal.com',
+  'https://www.bookswritingnepal.com',
+  'http://localhost:5173',
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(null, true);
+      }
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.error('MongoDB connection error:', err));
+
+app.use('/api/books', booksRouter);
+app.use('/api/orders', ordersRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/portfolio', portfolioRouter);
 
 app.post('/send-email', async (req, res) => {
   console.log('Received POST /send-email', req.body);
@@ -18,18 +62,8 @@ app.post('/send-email', async (req, res) => {
   // Destructure all fields including service
   const { name, email, address, phone, about, when, service, budget } = req.body;
 
-  // Debug logs to verify .env loading
-  console.log('EMAIL_USER:', process.env.EMAIL_USER);
-  console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Loaded' : 'Missing');
-
   // Create transporter with your Gmail credentials from .env
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  const transporter = getTransporter();
 
   // Compose email HTML with service included
   const mailOptions = {

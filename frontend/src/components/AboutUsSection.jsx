@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HashLink } from 'react-router-hash-link';
-import aboutVideo from '../assets/Video 1.mp4';
+import aboutVideo from '../assets/Video 2.mp4';
 
 const AboutUsSection = () => {
   const [showVideo, setShowVideo] = useState(false);

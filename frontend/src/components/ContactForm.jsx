@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { API_BASE_URL } from '../config';
 import AOS from 'aos';
 import {
   FaStar,
@@ -59,8 +60,7 @@ export default function ContactForm() {
     e.preventDefault();
     setStatus('Sending...');
     try {
-      // const res = await fetch('http://localhost:5000/send-email', {
-       const res = await fetch('http://bookswritingnepal.com/send-email', {
+      const res = await fetch(`${API_BASE_URL}/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
